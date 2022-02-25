@@ -1,9 +1,19 @@
 package com.nosuchdevice
 
+import com.bitwig.extension.api.Color
 import com.bitwig.extension.controller.api.MidiIn
 import com.bitwig.extension.controller.api.MidiOut
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
-class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: MidiOut) {
+class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: MidiOut) : CoroutineScope {
+
+    private val job = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
+    private val blinkMap: MutableMap<Int, Job> = mutableMapOf()
 
     fun getLEDFor(i: Int, j: Int): Int {
         return GRID[i][j]
@@ -26,6 +36,22 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
                 outputPort.sendMidi(0x90, note + noteOffset, 127)
             }
         }
+    }
+
+    fun blinkLED(buttonNote: Int) {
+        blinkMap[buttonNote]?.cancel()
+        blinkMap[buttonNote] = launch {
+            while(isActive) {
+                updateLED(buttonNote, GREEN)
+                delay(150)
+                updateLED(buttonNote, YELLOW)
+                delay(500)
+            }
+        }
+    }
+
+    fun cancelBlink(buttonNote: Int) {
+        blinkMap.remove(buttonNote)?.cancel()
     }
 
     companion object {
@@ -82,6 +108,7 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
         const val RED = 1
         const val YELLOW = 2
         const val GREEN = 3
+        const val BLINK_GREEN = 4
         const val OFF = 0
 
         val GRID = arrayOf(

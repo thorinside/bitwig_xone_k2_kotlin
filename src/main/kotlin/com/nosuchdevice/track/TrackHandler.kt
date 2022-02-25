@@ -4,6 +4,7 @@ import com.bitwig.extension.api.Color
 import com.bitwig.extension.api.util.midi.ShortMidiMessage
 import com.bitwig.extension.controller.api.*
 import com.nosuchdevice.XoneK2Hardware
+import com.nosuchdevice.XoneK2Hardware.Companion.BLINK_GREEN
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_0
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_1
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_2
@@ -30,8 +31,8 @@ class LightState(val color: Int) : InternalHardwareLightState() {
         return when (color) {
             YELLOW -> HardwareLightVisualState.createForColor(Color.fromRGB(1.0, 1.0, 0.0))
             RED -> HardwareLightVisualState.createForColor(Color.fromRGB(1.0, 0.0, 0.0))
-            GREEN -> //HardwareLightVisualState.createForColor(Color.fromRGB(0.0, 1.0, 0.0))
-                HardwareLightVisualState.createBlinking(Color.fromRGB(0.0, 1.0, 0.0), Color.fromRGB(1.0, 1.0, 0.0), 1.0, 1.0)
+            GREEN -> HardwareLightVisualState.createForColor(Color.fromRGB(0.0, 1.0, 0.0))
+            BLINK_GREEN -> HardwareLightVisualState.createBlinking(Color.fromRGB(0.0, 1.0, 0.0), Color.fromRGB(1.0, 1.0, 0.0), 1.0, 1.0)
             OFF -> HardwareLightVisualState.createForColor(Color.blackColor())
             else -> HardwareLightVisualState.createForColor(Color.nullColor())
         }
@@ -79,6 +80,7 @@ class TrackHandler(
 
             for (j in 0 until track.clipLauncherSlotBank().sizeOfBank) {
                 val clip = track.clipLauncherSlotBank().getItemAt(j)
+                clip.isPlaybackQueued.markInterested()
                 clip.isPlaying.markInterested()
                 clip.isRecording.markInterested()
                 clip.hasContent().markInterested()
@@ -103,6 +105,7 @@ class TrackHandler(
                 playButtonLight.state().setValueSupplier {
                     LightState(
                         when {
+                            clip.isPlaybackQueued.get() -> BLINK_GREEN
                             clip.isPlaying.get() -> GREEN
                             clip.isRecording.get() -> RED
                             clip.hasContent().get() -> YELLOW
@@ -112,7 +115,13 @@ class TrackHandler(
                 }
 
                 playButtonLight.state().onUpdateHardware {
-                    hardware.updateLED(buttonNote, (it as LightState).color)
+                    host.println("Update Hardware: ${it.visualState.isBlinking}")
+                    if (it.visualState.isBlinking) {
+                        hardware.blinkLED(buttonNote)
+                    } else {
+                        hardware.cancelBlink(buttonNote)
+                        hardware.updateLED(buttonNote, (it as LightState).color)
+                    }
                 }
             }
 

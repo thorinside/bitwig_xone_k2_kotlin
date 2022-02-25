@@ -22,7 +22,6 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
         hardwareSurface = host.createHardwareSurface()
 
         inPort.setMidiCallback(ShortMidiMessageReceivedCallback { msg: ShortMidiMessage -> onMidi0(msg) })
-        inPort.setSysexCallback { data: String -> onSysex0(data) }
 
         val hardware = XoneK2Hardware(inPort, outPort)
 
@@ -95,9 +94,5 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
         if (trackHandler?.handleMidi(msg) == true) return
 
         host.println(msg.toString())
-    }
-
-    /** Called when we receive sysex MIDI message on port 0.  */
-    private fun onSysex0(data: String) {
     }
 }

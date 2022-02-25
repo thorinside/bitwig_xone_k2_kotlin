@@ -20,7 +20,9 @@ dependencies {
     implementation("com.bitwig:extension-api:15") // provided
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    implementation("org.slf4j:slf4j-api:1.7.36")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
     // development build
     if (project.hasProperty("dev")) {
@@ -46,7 +48,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
         exclude(dependency("com.bitwig:extension-api:16"))
         exclude(dependency("org.apache.commons:commons-lang3:3.5"))
         if(!project.hasProperty("dev")) {
-            exclude("logback.xml");
+            exclude("logback.xml")
         }
     }
 }
