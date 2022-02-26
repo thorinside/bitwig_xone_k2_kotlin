@@ -6,6 +6,7 @@ import com.bitwig.extension.controller.api.*
 import com.nosuchdevice.XoneK2Hardware
 import com.nosuchdevice.XoneK2Hardware.Companion.ABS_0
 import com.nosuchdevice.XoneK2Hardware.Companion.BLINK_GREEN
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_LAYER
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_0
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_1
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_2
@@ -24,6 +25,7 @@ import com.nosuchdevice.XoneK2Hardware.Companion.REL_3_CLICK
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_4
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_5
 import com.nosuchdevice.XoneK2Hardware.Companion.YELLOW
+import java.util.*
 import java.util.function.Supplier
 
 
@@ -70,6 +72,14 @@ class TrackHandler(
     private val host: ControllerHost,
 ) {
 
+    enum class NavigationMode {
+        SCENE,
+        DEVICE,
+        TRACK,
+    }
+
+    private var currentNavigationMode: NavigationMode = NavigationMode.SCENE
+
     private val sceneBank = trackBank.sceneBank()
 
     private val cursorDevice = cursorTrack.createCursorDevice(
@@ -80,12 +90,35 @@ class TrackHandler(
     )
     private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(12)
 
+    private val rel4 = hardwareSurface.createRelativeHardwareKnob("REL_4")
+    private val rel5 = hardwareSurface.createRelativeHardwareKnob("REL_5")
+
+    private var verticalNavigation: HardwareBinding? = null
+    private var horizontalNavigation: HardwareBinding? = null
+
     init {
         sceneBank.setIndication(true)
 
+        // Set up navigation knobs
+        rel4.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_4, 10))
+        rel5.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_5, 10))
+
         addVolumeFaders()
         addPanners()
-        addNavigation()
+        updateNavigation(currentNavigationMode)
+
+        val layerButton = hardwareSurface.createHardwareButton("LAYER")
+        layerButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, BUTTON_LAYER))
+        layerButton.pressedAction().setBinding(
+            host.createAction(Runnable {
+                updateNavigation(when(currentNavigationMode) {
+                    NavigationMode.SCENE -> NavigationMode.TRACK
+                    NavigationMode.TRACK -> NavigationMode.DEVICE
+                    NavigationMode.DEVICE -> NavigationMode.SCENE
+                })
+            }, Supplier { "Change Navigation Mode"})
+        )
+
 
         for (i in 0 until trackBank.sizeOfBank) {
             val track = this.trackBank.getItemAt(i)
@@ -234,14 +267,32 @@ class TrackHandler(
         )
     }
 
-    private fun addNavigation() {
-        val rel4 = hardwareSurface.createRelativeHardwareKnob("REL_4")
-        val rel5 = hardwareSurface.createRelativeHardwareKnob("REL_5")
-        rel4.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_4, 10))
-        rel5.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_5, 10))
+    private fun updateNavigation(mode: NavigationMode) {
 
-        trackBank.addBinding(rel4)
-        sceneBank.addBinding(rel5)
+        host.showPopupNotification(mode.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+
+        verticalNavigation?.removeBinding()
+        horizontalNavigation?.removeBinding()
+
+        when(mode) {
+            NavigationMode.SCENE -> {
+                verticalNavigation = trackBank.addBinding(rel4)
+                horizontalNavigation = sceneBank.addBinding(rel5)
+                hardware.updateLED(BUTTON_LAYER, YELLOW)
+            }
+            NavigationMode.TRACK -> {
+                verticalNavigation = cursorTrack.addBinding(rel4)
+                horizontalNavigation = cursorDevice.addBinding(rel5)
+                hardware.updateLED(BUTTON_LAYER, GREEN)
+            }
+            NavigationMode.DEVICE -> {
+                verticalNavigation = remoteControlBank.addBinding(rel4)
+                horizontalNavigation = cursorDevice.addBinding(rel5)
+                hardware.updateLED(BUTTON_LAYER, RED)
+            }
+        }
+
+        currentNavigationMode = mode
     }
 
     fun handleMidi(msg: ShortMidiMessage): Boolean {
