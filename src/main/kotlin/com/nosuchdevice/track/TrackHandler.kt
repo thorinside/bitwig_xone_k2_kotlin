@@ -33,7 +33,12 @@ class LightState(val color: Int) : InternalHardwareLightState() {
             YELLOW -> HardwareLightVisualState.createForColor(Color.fromRGB(1.0, 1.0, 0.0))
             RED -> HardwareLightVisualState.createForColor(Color.fromRGB(1.0, 0.0, 0.0))
             GREEN -> HardwareLightVisualState.createForColor(Color.fromRGB(0.0, 1.0, 0.0))
-            BLINK_GREEN -> HardwareLightVisualState.createBlinking(Color.fromRGB(0.0, 1.0, 0.0), Color.fromRGB(1.0, 1.0, 0.0), 1.0, 1.0)
+            BLINK_GREEN -> HardwareLightVisualState.createBlinking(
+                Color.fromRGB(0.0, 1.0, 0.0),
+                Color.fromRGB(1.0, 1.0, 0.0),
+                1.0,
+                1.0
+            )
             OFF -> HardwareLightVisualState.createForColor(Color.blackColor())
             else -> HardwareLightVisualState.createForColor(Color.nullColor())
         }
@@ -67,7 +72,12 @@ class TrackHandler(
 
     private val sceneBank = trackBank.sceneBank()
 
-    private val cursorDevice = cursorTrack.createCursorDevice("XONE_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION)
+    private val cursorDevice = cursorTrack.createCursorDevice(
+        "XONE_CURSOR_DEVICE",
+        "Cursor Device",
+        0,
+        CursorDeviceFollowMode.FOLLOW_SELECTION
+    )
     private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(12)
 
     init {
@@ -145,7 +155,7 @@ class TrackHandler(
         cursorDevice.isEnabled.markInterested()
         cursorDevice.isWindowOpen.markInterested()
 
-        for(i in 0 until remoteControlBank.parameterCount) {
+        for (i in 0 until remoteControlBank.parameterCount) {
             remoteControlBank.getParameter(i).apply {
                 markInterested()
                 setIndication(true)

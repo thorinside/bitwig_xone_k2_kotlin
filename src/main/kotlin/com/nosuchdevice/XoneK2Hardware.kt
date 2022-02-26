@@ -1,6 +1,5 @@
 package com.nosuchdevice
 
-import com.bitwig.extension.api.Color
 import com.bitwig.extension.controller.api.MidiIn
 import com.bitwig.extension.controller.api.MidiOut
 import kotlinx.coroutines.*
@@ -41,7 +40,7 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
     fun blinkLED(buttonNote: Int) {
         blinkMap[buttonNote]?.cancel()
         blinkMap[buttonNote] = launch {
-            while(isActive) {
+            while (isActive) {
                 updateLED(buttonNote, GREEN)
                 delay(150)
                 updateLED(buttonNote, YELLOW)

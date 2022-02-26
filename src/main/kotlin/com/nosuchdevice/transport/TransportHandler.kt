@@ -5,7 +5,6 @@ import com.bitwig.extension.controller.api.MidiIn
 import com.bitwig.extension.controller.api.Transport
 import com.nosuchdevice.XoneK2Hardware
 import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_SETUP
-import com.nosuchdevice.XoneK2Hardware.Companion.GREEN
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_0
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_1
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_2
@@ -15,7 +14,12 @@ import com.nosuchdevice.XoneK2Hardware.Companion.RED
 import com.nosuchdevice.XoneK2Hardware.Companion.YELLOW
 import com.nosuchdevice.track.LightState
 
-class TransportHandler(val inPort: MidiIn, val transport: Transport, val hardwareSurface: HardwareSurface, val hardware: XoneK2Hardware) {
+class TransportHandler(
+    val inPort: MidiIn,
+    val transport: Transport,
+    val hardwareSurface: HardwareSurface,
+    val hardware: XoneK2Hardware
+) {
 
     init {
         val playButton = hardwareSurface.createHardwareButton("PLAY_BUTTON")
@@ -36,32 +40,40 @@ class TransportHandler(val inPort: MidiIn, val transport: Transport, val hardwar
         transport.isFillModeActive.markInterested()
 
         light0.state().setValueSupplier {
-            LightState(when {
-                transport.isPlaying.get() -> YELLOW
-                else -> OFF
-            })
+            LightState(
+                when {
+                    transport.isPlaying.get() -> YELLOW
+                    else -> OFF
+                }
+            )
         }
 
 
         light1.state().setValueSupplier {
-            LightState(when {
-                transport.isArrangerRecordEnabled.get() -> RED
-                else -> OFF
-            })
+            LightState(
+                when {
+                    transport.isArrangerRecordEnabled.get() -> RED
+                    else -> OFF
+                }
+            )
         }
 
         light2.state().setValueSupplier {
-            LightState(when {
-                transport.isFillModeActive.get() -> YELLOW
-                else -> OFF
-            })
+            LightState(
+                when {
+                    transport.isFillModeActive.get() -> YELLOW
+                    else -> OFF
+                }
+            )
         }
 
         light3.state().setValueSupplier {
-            LightState(when {
-                transport.isClipLauncherAutomationWriteEnabled.get() -> YELLOW
-                else -> OFF
-            })
+            LightState(
+                when {
+                    transport.isClipLauncherAutomationWriteEnabled.get() -> YELLOW
+                    else -> OFF
+                }
+            )
         }
 
 
@@ -73,8 +85,6 @@ class TransportHandler(val inPort: MidiIn, val transport: Transport, val hardwar
         playButtonLight.isOn.onUpdateHardware {
             hardware.updateLED(BUTTON_SETUP, if (it) YELLOW else OFF)
         }
-
-
 
         light0.state().onUpdateHardware {
             hardware.updateLED(LIGHT_0, (it as LightState).color)
