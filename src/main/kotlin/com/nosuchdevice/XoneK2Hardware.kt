@@ -101,6 +101,9 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
         const val REL_4 = 0x14
         const val REL_5 = 0x15
 
+        const val REL_4_BUTTON = 13
+        const val REL_5_BUTTON = 14
+
         const val LIGHT_0 = 52
         const val LIGHT_1 = 53
         const val LIGHT_2 = 54

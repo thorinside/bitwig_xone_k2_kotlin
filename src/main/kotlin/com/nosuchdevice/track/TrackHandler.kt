@@ -23,7 +23,9 @@ import com.nosuchdevice.XoneK2Hardware.Companion.REL_2_CLICK
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_3
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_3_CLICK
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_4
+import com.nosuchdevice.XoneK2Hardware.Companion.REL_4_BUTTON
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_5
+import com.nosuchdevice.XoneK2Hardware.Companion.REL_5_BUTTON
 import com.nosuchdevice.XoneK2Hardware.Companion.YELLOW
 import java.util.*
 import java.util.function.Supplier
@@ -106,20 +108,31 @@ class TrackHandler(
         addVolumeFaders()
         addPanners()
         updateNavigation(currentNavigationMode)
+        addNavigationModeButton()
+        addWindowOpenToggle()
+        addDeviceEnabledToggle()
+        addClipLaunching()
 
-        val layerButton = hardwareSurface.createHardwareButton("LAYER")
-        layerButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, BUTTON_LAYER))
-        layerButton.pressedAction().setBinding(
-            host.createAction(Runnable {
-                updateNavigation(when(currentNavigationMode) {
-                    NavigationMode.SCENE -> NavigationMode.TRACK
-                    NavigationMode.TRACK -> NavigationMode.DEVICE
-                    NavigationMode.DEVICE -> NavigationMode.SCENE
-                })
-            }, Supplier { "Change Navigation Mode"})
-        )
+        trackBank.followCursorTrack(cursorTrack)
 
+        cursorTrack.solo().markInterested()
+        cursorTrack.mute().markInterested()
 
+        cursorDevice.isEnabled.markInterested()
+        cursorDevice.isWindowOpen.markInterested()
+
+        for (i in 0 until remoteControlBank.parameterCount) {
+            remoteControlBank.getParameter(i).apply {
+                markInterested()
+                setIndication(true)
+                val absoluteHardwareKnob = hardwareSurface.createAbsoluteHardwareKnob("KNOB_$i")
+                absoluteHardwareKnob.setAdjustValueMatcher(inPort.createAbsoluteCCValueMatcher(0, ABS_0 + i))
+                addBinding(absoluteHardwareKnob)
+            }
+        }
+    }
+
+    private fun addClipLaunching() {
         for (i in 0 until trackBank.sizeOfBank) {
             val track = this.trackBank.getItemAt(i)
 
@@ -179,24 +192,46 @@ class TrackHandler(
             p.markInterested()
             p.setIndication(true)
         }
+    }
 
-        trackBank.followCursorTrack(cursorTrack)
+    private fun addNavigationModeButton() {
+        val layerButton = hardwareSurface.createHardwareButton("LAYER")
+        layerButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, BUTTON_LAYER))
+        layerButton.pressedAction().setBinding(
+            host.createAction(Runnable {
+                updateNavigation(
+                    when (currentNavigationMode) {
+                        NavigationMode.SCENE -> NavigationMode.TRACK
+                        NavigationMode.TRACK -> NavigationMode.DEVICE
+                        NavigationMode.DEVICE -> NavigationMode.SCENE
+                    }
+                )
+            }, Supplier { "Change Navigation Mode" })
+        )
+    }
 
-        cursorTrack.solo().markInterested()
-        cursorTrack.mute().markInterested()
+    private fun addWindowOpenToggle() {
+        val openWindowButton = hardwareSurface.createHardwareButton("OPEN_WINDOW")
+        openWindowButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, REL_5_BUTTON))
+        openWindowButton.pressedAction().setBinding(
+            host.createAction(Runnable {
+                if (currentNavigationMode == NavigationMode.DEVICE) {
+                    cursorDevice.isWindowOpen.toggle()
+                }
+            }, Supplier { "Toggle Device Window" })
+        )
+    }
 
-        cursorDevice.isEnabled.markInterested()
-        cursorDevice.isWindowOpen.markInterested()
-
-        for (i in 0 until remoteControlBank.parameterCount) {
-            remoteControlBank.getParameter(i).apply {
-                markInterested()
-                setIndication(true)
-                val absoluteHardwareKnob = hardwareSurface.createAbsoluteHardwareKnob("KNOB_$i")
-                absoluteHardwareKnob.setAdjustValueMatcher(inPort.createAbsoluteCCValueMatcher(0, ABS_0 + i))
-                addBinding(absoluteHardwareKnob)
-            }
-        }
+    private fun addDeviceEnabledToggle() {
+        val hardwareButton = hardwareSurface.createHardwareButton("ENABLE_DEVICE")
+        hardwareButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, REL_4_BUTTON))
+        hardwareButton.pressedAction().setBinding(
+            host.createAction(Runnable {
+                if (currentNavigationMode == NavigationMode.DEVICE) {
+                    cursorDevice.isEnabled.toggle()
+                }
+            }, Supplier { "Toggle Device Enabled" })
+        )
     }
 
     private fun addVolumeFaders() {
@@ -269,12 +304,17 @@ class TrackHandler(
 
     private fun updateNavigation(mode: NavigationMode) {
 
-        host.showPopupNotification(mode.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+        host.showPopupNotification(
+            "${
+                mode.name.lowercase()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            } Mode"
+        )
 
         verticalNavigation?.removeBinding()
         horizontalNavigation?.removeBinding()
 
-        when(mode) {
+        when (mode) {
             NavigationMode.SCENE -> {
                 verticalNavigation = trackBank.addBinding(rel4)
                 horizontalNavigation = sceneBank.addBinding(rel5)
