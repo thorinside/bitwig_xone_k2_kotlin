@@ -90,7 +90,7 @@ class TrackHandler(
         0,
         CursorDeviceFollowMode.FOLLOW_SELECTION
     )
-    private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(12)
+    private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(8)
 
     private val rel4 = hardwareSurface.createRelativeHardwareKnob("REL_4")
     private val rel5 = hardwareSurface.createRelativeHardwareKnob("REL_5")
@@ -101,9 +101,7 @@ class TrackHandler(
     init {
         sceneBank.setIndication(true)
 
-        // Set up navigation knobs
-        rel4.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_4, 10))
-        rel5.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_5, 10))
+        addNavigationKnobs()
 
         addVolumeFaders()
         addPanners()
@@ -112,6 +110,7 @@ class TrackHandler(
         addWindowOpenToggle()
         addDeviceEnabledToggle()
         addClipLaunching()
+        addRemoteControlKnobs()
 
         trackBank.followCursorTrack(cursorTrack)
 
@@ -121,6 +120,9 @@ class TrackHandler(
         cursorDevice.isEnabled.markInterested()
         cursorDevice.isWindowOpen.markInterested()
 
+    }
+
+    private fun addRemoteControlKnobs() {
         for (i in 0 until remoteControlBank.parameterCount) {
             remoteControlBank.getParameter(i).apply {
                 markInterested()
@@ -130,6 +132,12 @@ class TrackHandler(
                 addBinding(absoluteHardwareKnob)
             }
         }
+    }
+
+    private fun addNavigationKnobs() {
+        // Set up navigation knobs
+        rel4.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_4, 10))
+        rel5.setAdjustValueMatcher(inPort.createRelative2sComplementCCValueMatcher(0, REL_5, 10))
     }
 
     private fun addClipLaunching() {
@@ -195,9 +203,9 @@ class TrackHandler(
     }
 
     private fun addNavigationModeButton() {
-        val layerButton = hardwareSurface.createHardwareButton("LAYER")
-        layerButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, BUTTON_LAYER))
-        layerButton.pressedAction().setBinding(
+        val hardwareButton = hardwareSurface.createHardwareButton("LAYER")
+        hardwareButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, BUTTON_LAYER))
+        hardwareButton.pressedAction().setBinding(
             host.createAction(Runnable {
                 updateNavigation(
                     when (currentNavigationMode) {
@@ -211,9 +219,9 @@ class TrackHandler(
     }
 
     private fun addWindowOpenToggle() {
-        val openWindowButton = hardwareSurface.createHardwareButton("OPEN_WINDOW")
-        openWindowButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, REL_5_BUTTON))
-        openWindowButton.pressedAction().setBinding(
+        val hardwareButton = hardwareSurface.createHardwareButton("OPEN_WINDOW")
+        hardwareButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, REL_5_BUTTON))
+        hardwareButton.pressedAction().setBinding(
             host.createAction(Runnable {
                 if (currentNavigationMode == NavigationMode.DEVICE) {
                     cursorDevice.isWindowOpen.toggle()

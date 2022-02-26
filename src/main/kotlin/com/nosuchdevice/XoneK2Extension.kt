@@ -87,10 +87,10 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
             surface.hardwareElementWithId("KNOB_5").setBounds(38.25, 60.75, 10.0, 10.0)
             surface.hardwareElementWithId("KNOB_6").setBounds(55.25, 60.75, 10.0, 10.0)
             surface.hardwareElementWithId("KNOB_7").setBounds(69.5, 60.75, 10.0, 10.0)
-            surface.hardwareElementWithId("KNOB_8").setBounds(20.25, 78.75, 10.0, 10.0)
-            surface.hardwareElementWithId("KNOB_9").setBounds(38.25, 78.75, 10.0, 10.0)
-            surface.hardwareElementWithId("KNOB_10").setBounds(55.25, 78.75, 10.0, 10.0)
-            surface.hardwareElementWithId("KNOB_11").setBounds(69.5, 78.75, 10.0, 10.0)
+            //surface.hardwareElementWithId("KNOB_8").setBounds(20.25, 78.75, 10.0, 10.0)
+            //surface.hardwareElementWithId("KNOB_9").setBounds(38.25, 78.75, 10.0, 10.0)
+            //surface.hardwareElementWithId("KNOB_10").setBounds(55.25, 78.75, 10.0, 10.0)
+            //surface.hardwareElementWithId("KNOB_11").setBounds(69.5, 78.75, 10.0, 10.0)
         }
 
         host.showPopupNotification("Xone:K2 Initialized")
