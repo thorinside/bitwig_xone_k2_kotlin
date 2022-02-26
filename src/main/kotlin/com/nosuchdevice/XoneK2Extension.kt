@@ -41,40 +41,57 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
             host = host
         )
 
-        hardwareSurface.setPhysicalSize(100.0,250.0)
+        hardwareSurface.setPhysicalSize(100.0, 250.0)
 
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON").setBounds(85.5, 234.25, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("SLIDER_0").setBounds(28.25, 105.75, 10.0, 50.0);
-        hardwareSurface.hardwareElementWithId("SLIDER_1").setBounds(40.25, 105.75, 10.0, 50.0);
-        hardwareSurface.hardwareElementWithId("SLIDER_2").setBounds(52.25, 105.75, 10.0, 50.0);
-        hardwareSurface.hardwareElementWithId("SLIDER_3").setBounds(65.75, 105.75, 10.0, 50.0);
-        hardwareSurface.hardwareElementWithId("REL_0").setBounds(27.25, 6.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_1").setBounds(39.25, 6.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_2").setBounds(51.25, 6.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_3").setBounds(63.25, 6.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_0_CLICK").setBounds(27.75, 18.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_1_CLICK").setBounds(39.75, 18.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_2_CLICK").setBounds(51.75, 18.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_3_CLICK").setBounds(64.0, 18.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_4").setBounds(41.0, 233.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("REL_5").setBounds(55.75, 233.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_0_0").setBounds(27.5, 170.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_0_1").setBounds(39.5, 170.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_0_2").setBounds(51.5, 170.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_0_3").setBounds(63.5, 170.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_1_0").setBounds(27.75, 181.5, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_1_1").setBounds(39.5, 181.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_1_2").setBounds(51.5, 181.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_1_3").setBounds(63.5, 181.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_2_0").setBounds(28.0, 193.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_2_1").setBounds(40.0, 193.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_2_2").setBounds(52.0, 193.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_2_3").setBounds(64.0, 193.75, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_3_0").setBounds(28.25, 206.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_3_1").setBounds(40.5, 206.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_3_2").setBounds(52.5, 206.0, 10.0, 10.0);
-        hardwareSurface.hardwareElementWithId("PLAY_BUTTON_3_3").setBounds(64.5, 206.0, 10.0, 10.0);
-
+        hardwareSurface.let { surface ->
+            surface.hardwareElementWithId("PLAY_BUTTON").setBounds(85.5, 234.25, 10.0, 10.0)
+            surface.hardwareElementWithId("SLIDER_0").setBounds(28.25, 105.75, 10.0, 50.0)
+            surface.hardwareElementWithId("SLIDER_1").setBounds(40.25, 105.75, 10.0, 50.0)
+            surface.hardwareElementWithId("SLIDER_2").setBounds(52.25, 105.75, 10.0, 50.0)
+            surface.hardwareElementWithId("SLIDER_3").setBounds(65.75, 105.75, 10.0, 50.0)
+            surface.hardwareElementWithId("REL_0").setBounds(27.25, 6.5, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_1").setBounds(39.25, 6.5, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_2").setBounds(51.25, 6.5, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_3").setBounds(63.25, 6.5, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_0_CLICK").setBounds(27.75, 18.75, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_1_CLICK").setBounds(39.75, 18.75, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_2_CLICK").setBounds(51.75, 18.75, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_3_CLICK").setBounds(64.0, 18.5, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_4").setBounds(41.0, 233.0, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_5").setBounds(55.75, 233.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_0_0").setBounds(27.5, 170.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_0_1").setBounds(39.5, 170.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_0_2").setBounds(51.5, 170.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_0_3").setBounds(63.5, 170.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_1_0").setBounds(27.75, 181.5, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_1_1").setBounds(39.5, 181.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_1_2").setBounds(51.5, 181.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_1_3").setBounds(63.5, 181.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_2_0").setBounds(28.0, 193.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_2_1").setBounds(40.0, 193.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_2_2").setBounds(52.0, 193.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_2_3").setBounds(64.0, 193.75, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_3_0").setBounds(28.25, 206.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_3_1").setBounds(40.5, 206.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_3_2").setBounds(52.5, 206.0, 10.0, 10.0)
+            surface.hardwareElementWithId("PLAY_BUTTON_3_3").setBounds(64.5, 206.0, 10.0, 10.0)
+            surface.hardwareElementWithId("LIGHT_0").setBounds(20.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("LIGHT_1").setBounds(38.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("LIGHT_2").setBounds(55.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("LIGHT_3").setBounds(55.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_0").setBounds(20.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_1").setBounds(38.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_2").setBounds(55.25, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_3").setBounds(69.5, 43.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_4").setBounds(20.25, 60.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_5").setBounds(38.25, 60.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_6").setBounds(55.25, 60.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_7").setBounds(69.5, 60.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_8").setBounds(20.25, 78.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_9").setBounds(38.25, 78.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_10").setBounds(55.25, 78.75, 10.0, 10.0)
+            surface.hardwareElementWithId("KNOB_11").setBounds(69.5, 78.75, 10.0, 10.0)
+        }
 
         host.showPopupNotification("Xone:K2 Initialized")
     }

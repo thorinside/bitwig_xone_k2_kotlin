@@ -4,6 +4,7 @@ import com.bitwig.extension.api.Color
 import com.bitwig.extension.api.util.midi.ShortMidiMessage
 import com.bitwig.extension.controller.api.*
 import com.nosuchdevice.XoneK2Hardware
+import com.nosuchdevice.XoneK2Hardware.Companion.ABS_0
 import com.nosuchdevice.XoneK2Hardware.Companion.BLINK_GREEN
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_0
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_1
@@ -66,6 +67,9 @@ class TrackHandler(
 
     private val sceneBank = trackBank.sceneBank()
 
+    private val cursorDevice = cursorTrack.createCursorDevice("XONE_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION)
+    private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(12)
+
     init {
         sceneBank.setIndication(true)
 
@@ -115,7 +119,6 @@ class TrackHandler(
                 }
 
                 playButtonLight.state().onUpdateHardware {
-                    host.println("Update Hardware: ${it.visualState.isBlinking}")
                     if (it.visualState.isBlinking) {
                         hardware.blinkLED(buttonNote)
                     } else {
@@ -138,6 +141,19 @@ class TrackHandler(
 
         cursorTrack.solo().markInterested()
         cursorTrack.mute().markInterested()
+
+        cursorDevice.isEnabled.markInterested()
+        cursorDevice.isWindowOpen.markInterested()
+
+        for(i in 0 until remoteControlBank.parameterCount) {
+            remoteControlBank.getParameter(i).apply {
+                markInterested()
+                setIndication(true)
+                val absoluteHardwareKnob = hardwareSurface.createAbsoluteHardwareKnob("KNOB_$i")
+                absoluteHardwareKnob.setAdjustValueMatcher(inPort.createAbsoluteCCValueMatcher(0, ABS_0 + i))
+                addBinding(absoluteHardwareKnob)
+            }
+        }
     }
 
     private fun addVolumeFaders() {
