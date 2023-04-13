@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.8.20"
     id("java-library")
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.bitwig:extension-api:15") // provided
+    implementation("com.bitwig:extension-api:18") // provided
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
     implementation("org.slf4j:slf4j-api:1.7.36")

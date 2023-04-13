@@ -43,6 +43,7 @@ class LightState(val color: Int) : InternalHardwareLightState() {
                 1.0,
                 1.0
             )
+
             OFF -> HardwareLightVisualState.createForColor(Color.blackColor())
             else -> HardwareLightVisualState.createForColor(Color.nullColor())
         }
@@ -54,9 +55,7 @@ class LightState(val color: Int) : InternalHardwareLightState() {
 
         other as LightState
 
-        if (color != other.color) return false
-
-        return true
+        return color == other.color
     }
 
     override fun hashCode(): Int {
@@ -81,6 +80,7 @@ class TrackHandler(
     }
 
     private var currentNavigationMode: NavigationMode = NavigationMode.SCENE
+    private var isShiftPressed: Boolean = false
 
     private val sceneBank = trackBank.sceneBank()
 
@@ -109,6 +109,7 @@ class TrackHandler(
         addNavigationModeButton()
         addWindowOpenToggle()
         addDeviceEnabledToggle()
+        addShiftButton()
         addClipLaunching()
         addRemoteControlKnobs()
 
@@ -144,8 +145,6 @@ class TrackHandler(
         for (i in 0 until trackBank.sizeOfBank) {
             val track = this.trackBank.getItemAt(i)
 
-            track.clipLauncherSlotBank().setIndication(true)
-
             for (j in 0 until track.clipLauncherSlotBank().sizeOfBank) {
                 val clip = track.clipLauncherSlotBank().getItemAt(j)
                 clip.isPlaybackQueued.markInterested()
@@ -159,12 +158,27 @@ class TrackHandler(
                 playButton.setBackgroundLight(playButtonLight)
                 val buttonNote = hardware.getLEDFor(i, j)
 
+                playButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, buttonNote))
+                playButton.releasedAction().setBinding(host.createAction(Runnable {
+                    if (clip.isPlaying.get()) {
+                        if (isShiftPressed) {
+                            clip.launchReleaseAlt()
+                        } else {
+                            clip.launchRelease()
+                        }
+                    }
+                }, Supplier { "Release playing" }))
+
                 playButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, buttonNote))
                 playButton.pressedAction().setBinding(host.createAction(Runnable {
                     if (clip.isPlaying.get() || clip.isRecording.get()) {
                         track.stop()
                     } else {
-                        clip.launch()
+                        if (isShiftPressed) {
+                            clip.launchAlt()
+                        } else {
+                            clip.launch()
+                        }
                     }
                 }, Supplier {
                     "Toggle playing"
@@ -199,6 +213,40 @@ class TrackHandler(
             p = track.volume()
             p.markInterested()
             p.setIndication(true)
+        }
+    }
+
+    private fun addShiftButton() {
+        val shiftButton = hardwareSurface.createHardwareButton("BUTTON_8")
+        val shiftButtonLight = hardwareSurface.createMultiStateHardwareLight("BUTTON_8_LIGHT")
+
+        shiftButton.setBackgroundLight(shiftButtonLight)
+        shiftButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, 40))
+        shiftButton.releasedAction().setBinding(host.createAction(Runnable {
+            isShiftPressed = false
+        }, Supplier { "Release Shift" }))
+        shiftButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, 40))
+        shiftButton.pressedAction().setBinding(host.createAction(Runnable {
+            isShiftPressed = true
+        }, Supplier {
+            "Shift"
+        }))
+
+        shiftButtonLight.state().setValueSupplier {
+            LightState(
+                when {
+                    isShiftPressed -> GREEN
+                    else -> OFF
+                }
+            )
+        }
+        shiftButtonLight.state().onUpdateHardware {
+            if (it.visualState.isBlinking) {
+                hardware.blinkLED(40)
+            } else {
+                hardware.cancelBlink(40)
+                hardware.updateLED(40, (it as LightState).color)
+            }
         }
     }
 
@@ -328,11 +376,13 @@ class TrackHandler(
                 horizontalNavigation = sceneBank.addBinding(rel5)
                 hardware.updateLED(BUTTON_LAYER, YELLOW)
             }
+
             NavigationMode.TRACK -> {
                 verticalNavigation = cursorTrack.addBinding(rel4)
                 horizontalNavigation = cursorDevice.addBinding(rel5)
                 hardware.updateLED(BUTTON_LAYER, GREEN)
             }
+
             NavigationMode.DEVICE -> {
                 verticalNavigation = remoteControlBank.addBinding(rel4)
                 horizontalNavigation = cursorDevice.addBinding(rel5)
