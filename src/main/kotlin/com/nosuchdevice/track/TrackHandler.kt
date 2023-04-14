@@ -394,7 +394,7 @@ class TrackHandler(
         currentNavigationMode = mode
     }
 
-    fun handleMidi(msg: ShortMidiMessage): Boolean {
+    fun handleMidi(@Suppress("UNUSED_PARAMETER") msg: ShortMidiMessage): Boolean {
         return false
     }
 }
