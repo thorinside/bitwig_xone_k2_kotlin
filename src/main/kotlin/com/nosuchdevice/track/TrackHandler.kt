@@ -218,15 +218,15 @@ class TrackHandler(
     }
 
     private fun addShiftButton() {
-        val shiftButton = hardwareSurface.createHardwareButton("BUTTON_8")
-        val shiftButtonLight = hardwareSurface.createMultiStateHardwareLight("BUTTON_8_LIGHT")
+        val shiftButton = hardwareSurface.createHardwareButton("REL_4_BUTTON")
+        val shiftButtonLight = hardwareSurface.createMultiStateHardwareLight("LIGHT_3")
 
         shiftButton.setBackgroundLight(shiftButtonLight)
-        shiftButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, 13))
+        shiftButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, REL_4_BUTTON))
         shiftButton.releasedAction().setBinding(host.createAction(Runnable {
             isShiftPressed = false
         }, Supplier { "Release Shift" }))
-        shiftButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, 13))
+        shiftButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, REL_4_BUTTON))
         shiftButton.pressedAction().setBinding(host.createAction(Runnable {
             isShiftPressed = true
         }, Supplier {

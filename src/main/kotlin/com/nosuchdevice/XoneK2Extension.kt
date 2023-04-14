@@ -58,6 +58,7 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
             surface.hardwareElementWithId("REL_2_CLICK").setBounds(51.75, 18.75, 10.0, 10.0)
             surface.hardwareElementWithId("REL_3_CLICK").setBounds(64.0, 18.5, 10.0, 10.0)
             surface.hardwareElementWithId("REL_4").setBounds(41.0, 233.0, 10.0, 10.0)
+            surface.hardwareElementWithId("REL_4_BUTTON").setBounds(41.0, 233.0, 10.0, 10.0)
             surface.hardwareElementWithId("REL_5").setBounds(55.75, 233.0, 10.0, 10.0)
             surface.hardwareElementWithId("PLAY_BUTTON_0_0").setBounds(27.5, 170.0, 10.0, 10.0)
             surface.hardwareElementWithId("PLAY_BUTTON_0_1").setBounds(39.5, 170.0, 10.0, 10.0)
@@ -88,7 +89,7 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
             surface.hardwareElementWithId("KNOB_6").setBounds(55.25, 60.75, 10.0, 10.0)
             surface.hardwareElementWithId("KNOB_7").setBounds(69.5, 60.75, 10.0, 10.0)
 
-            surface.hardwareElementWithId("BUTTON_8").setBounds(15.5, 170.0, 10.0, 10.0)
+            //surface.hardwareElementWithId("BUTTON_8").setBounds(15.5, 170.0, 10.0, 10.0)
             //surface.hardwareElementWithId("KNOB_8").setBounds(20.25, 78.75, 10.0, 10.0)
             //surface.hardwareElementWithId("KNOB_9").setBounds(38.25, 78.75, 10.0, 10.0)
             //surface.hardwareElementWithId("KNOB_10").setBounds(55.25, 78.75, 10.0, 10.0)
