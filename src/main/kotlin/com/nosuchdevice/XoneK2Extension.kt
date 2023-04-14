@@ -13,7 +13,7 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
 
     private var transportHandler: TransportHandler? = null
     private var trackHandler: TrackHandler? = null
-    lateinit var hardwareSurface: HardwareSurface
+    private lateinit var hardwareSurface: HardwareSurface
 
     override fun init() {
 
@@ -100,8 +100,6 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
     }
 
     override fun exit() {
-        // TODO: Perform any cleanup once the driver exits
-        // For now just show a popup notification for verification that it is no longer running.
         host.showPopupNotification("XoneK2 Exited")
     }
 
