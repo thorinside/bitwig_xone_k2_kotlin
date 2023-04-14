@@ -25,12 +25,15 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
             OFF -> {
                 outputPort.sendMidi(0x90, note, 0)
             }
+
             RED -> {
                 outputPort.sendMidi(0x90, note, 127)
             }
+
             GREEN -> {
                 outputPort.sendMidi(0x90, note + noteOffset * 2, 127)
             }
+
             YELLOW -> {
                 outputPort.sendMidi(0x90, note + noteOffset, 127)
             }

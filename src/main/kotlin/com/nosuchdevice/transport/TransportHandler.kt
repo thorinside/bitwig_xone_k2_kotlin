@@ -8,7 +8,6 @@ import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_SETUP
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_0
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_1
 import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_2
-import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_3
 import com.nosuchdevice.XoneK2Hardware.Companion.OFF
 import com.nosuchdevice.XoneK2Hardware.Companion.RED
 import com.nosuchdevice.XoneK2Hardware.Companion.YELLOW
@@ -32,11 +31,9 @@ class TransportHandler(
         val light0 = hardwareSurface.createMultiStateHardwareLight("LIGHT_0")
         val light1 = hardwareSurface.createMultiStateHardwareLight("LIGHT_1")
         val light2 = hardwareSurface.createMultiStateHardwareLight("LIGHT_2")
-        val light3 = hardwareSurface.createMultiStateHardwareLight("LIGHT_3")
 
         transport.isPlaying.markInterested()
         transport.isArrangerRecordEnabled.markInterested()
-        transport.isClipLauncherAutomationWriteEnabled.markInterested()
         transport.isFillModeActive.markInterested()
 
         light0.state().setValueSupplier {
@@ -47,7 +44,6 @@ class TransportHandler(
                 }
             )
         }
-
 
         light1.state().setValueSupplier {
             LightState(
@@ -66,16 +62,6 @@ class TransportHandler(
                 }
             )
         }
-
-        light3.state().setValueSupplier {
-            LightState(
-                when {
-                    transport.isClipLauncherAutomationWriteEnabled.get() -> YELLOW
-                    else -> OFF
-                }
-            )
-        }
-
 
         transport.isPlaying.markInterested()
         playButtonLight.isOn.setValueSupplier {
@@ -97,10 +83,6 @@ class TransportHandler(
 
         light2.state().onUpdateHardware {
             hardware.updateLED(LIGHT_2, (it as LightState).color)
-        }
-
-        light3.state().onUpdateHardware {
-            hardware.updateLED(LIGHT_3, (it as LightState).color)
         }
     }
 }

@@ -12,6 +12,7 @@ import com.nosuchdevice.XoneK2Hardware.Companion.FADER_1
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_2
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_3
 import com.nosuchdevice.XoneK2Hardware.Companion.GREEN
+import com.nosuchdevice.XoneK2Hardware.Companion.LIGHT_3
 import com.nosuchdevice.XoneK2Hardware.Companion.OFF
 import com.nosuchdevice.XoneK2Hardware.Companion.RED
 import com.nosuchdevice.XoneK2Hardware.Companion.REL_0
@@ -221,11 +222,11 @@ class TrackHandler(
         val shiftButtonLight = hardwareSurface.createMultiStateHardwareLight("BUTTON_8_LIGHT")
 
         shiftButton.setBackgroundLight(shiftButtonLight)
-        shiftButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, 40))
+        shiftButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, 13))
         shiftButton.releasedAction().setBinding(host.createAction(Runnable {
             isShiftPressed = false
         }, Supplier { "Release Shift" }))
-        shiftButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, 40))
+        shiftButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, 13))
         shiftButton.pressedAction().setBinding(host.createAction(Runnable {
             isShiftPressed = true
         }, Supplier {
@@ -242,10 +243,10 @@ class TrackHandler(
         }
         shiftButtonLight.state().onUpdateHardware {
             if (it.visualState.isBlinking) {
-                hardware.blinkLED(40)
+                hardware.blinkLED(LIGHT_3)
             } else {
-                hardware.cancelBlink(40)
-                hardware.updateLED(40, (it as LightState).color)
+                hardware.cancelBlink(LIGHT_3)
+                hardware.updateLED(LIGHT_3, (it as LightState).color)
             }
         }
     }

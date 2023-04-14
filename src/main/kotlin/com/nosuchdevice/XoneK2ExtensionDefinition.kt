@@ -39,7 +39,7 @@ class XoneK2ExtensionDefinition : ControllerExtensionDefinition() {
             }
 
             PlatformType.MAC -> {
-                list.add(arrayOf("XONE:K2"), arrayOf("XONE:K2"));
+                list.add(arrayOf("XONE:K2"), arrayOf("XONE:K2"))
             }
 
             PlatformType.LINUX -> {
