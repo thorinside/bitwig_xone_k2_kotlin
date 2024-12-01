@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "2.0.21"
     id("java-library")
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.bitwig:extension-api:18") // provided
+    implementation("com.bitwig:extension-api:19") // provided
     implementation("org.apache.commons:commons-lang3:3.12.0")
 
     implementation("org.slf4j:slf4j-api:1.7.36")
@@ -37,15 +37,17 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+    }
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveFileName.set("XoneK2.bwextension")
     dependencies {
         // exclude provided dependencies
-        exclude(dependency("com.bitwig:extension-api:16"))
+        exclude(dependency("com.bitwig:extension-api:19"))
         exclude(dependency("org.apache.commons:commons-lang3:3.5"))
         if(!project.hasProperty("dev")) {
             exclude("logback.xml")

@@ -91,7 +91,7 @@ class TrackHandler(
         0,
         CursorDeviceFollowMode.FOLLOW_SELECTION
     )
-    private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(8)
+    private val remoteControlBank = cursorDevice.createCursorRemoteControlsPage(12)
 
     private val rel4 = hardwareSurface.createRelativeHardwareKnob("REL_4")
     private val rel5 = hardwareSurface.createRelativeHardwareKnob("REL_5")
@@ -100,7 +100,7 @@ class TrackHandler(
     private var horizontalNavigation: HardwareBinding? = null
 
     init {
-        sceneBank.setIndication(true)
+        trackBank.setShouldShowClipLauncherFeedback(true)
 
         addNavigationKnobs()
 
@@ -373,8 +373,8 @@ class TrackHandler(
 
         when (mode) {
             NavigationMode.SCENE -> {
-                verticalNavigation = trackBank.addBinding(rel4)
-                horizontalNavigation = sceneBank.addBinding(rel5)
+                verticalNavigation = trackBank.addBindingWithSensitivity(rel4, 0.5)
+                horizontalNavigation = sceneBank.addBindingWithSensitivity(rel5, 0.5)
                 hardware.updateLED(BUTTON_LAYER, YELLOW)
             }
 
