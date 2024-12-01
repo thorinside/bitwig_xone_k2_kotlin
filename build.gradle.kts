@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     kotlin("jvm") version "2.0.21"
     id("java-library")
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "me.nealsanche"
-version = "1.0-SNAPSHOT"
+group = "dev.nosuch"
+version = "1.0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -18,16 +18,16 @@ repositories {
 
 dependencies {
     implementation("com.bitwig:extension-api:19") // provided
-    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("org.apache.commons:commons-lang3:3.17.0")
 
-    implementation("org.slf4j:slf4j-api:1.7.36")
+    implementation("org.slf4j:slf4j-api:2.0.16")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     // development build
     if (project.hasProperty("dev")) {
-        implementation("ch.qos.logback:logback-core:1.2.3")
-        implementation("ch.qos.logback:logback-classic:1.2.3")
+        implementation("ch.qos.logback:logback-core:1.5.12")
+        implementation("ch.qos.logback:logback-classic:1.5.12")
     }
 }
 defaultTasks("shadowJar")

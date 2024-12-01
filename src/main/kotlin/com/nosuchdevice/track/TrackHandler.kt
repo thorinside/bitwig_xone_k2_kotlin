@@ -6,6 +6,18 @@ import com.bitwig.extension.controller.api.*
 import com.nosuchdevice.XoneK2Hardware
 import com.nosuchdevice.XoneK2Hardware.Companion.ABS_0
 import com.nosuchdevice.XoneK2Hardware.Companion.BLINK_GREEN
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_1_0
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_1_1
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_1_2
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_1_3
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_2_0
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_2_1
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_2_2
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_2_3
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_3_0
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_3_1
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_3_2
+import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_3_3
 import com.nosuchdevice.XoneK2Hardware.Companion.BUTTON_LAYER
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_0
 import com.nosuchdevice.XoneK2Hardware.Companion.FADER_1
@@ -106,6 +118,9 @@ class TrackHandler(
 
         addVolumeFaders()
         addPanners()
+        addArms()
+        addSolos()
+        addMutes()
         updateNavigation(currentNavigationMode)
         addNavigationModeButton()
         addWindowOpenToggle()
@@ -153,11 +168,11 @@ class TrackHandler(
                 clip.isRecording.markInterested()
                 clip.hasContent().markInterested()
 
-                val playButton = hardwareSurface.createHardwareButton("PLAY_BUTTON_${i}_$j")
-                val playButtonLight = hardwareSurface.createMultiStateHardwareLight("PLAY_BUTTON_LIGHT_${i}_$j")
+                val playButton = hardwareSurface.createHardwareButton("PLAY_BUTTON_${j}_$i")
+                val playButtonLight = hardwareSurface.createMultiStateHardwareLight("PLAY_BUTTON_LIGHT_${j}_$i")
 
                 playButton.setBackgroundLight(playButtonLight)
-                val buttonNote = hardware.getLEDFor(i, j)
+                val buttonNote = hardware.getLEDFor(j, i)
 
                 playButton.releasedAction().setActionMatcher(inPort.createNoteOffActionMatcher(0, buttonNote))
                 playButton.releasedAction().setBinding(host.createAction(Runnable {
@@ -308,6 +323,122 @@ class TrackHandler(
         slider3.setBinding(trackBank.getItemAt(3).volume())
     }
 
+    private fun addMutes() {
+        // Define button MIDI notes
+        val buttonNotes = arrayOf(BUTTON_3_0, BUTTON_3_1, BUTTON_3_2, BUTTON_3_3)
+
+        // Iterate through the tracks in the track bank
+        for (i in 0 until trackBank.sizeOfBank) {
+            val track = trackBank.getItemAt(i)
+            track.mute().markInterested()
+
+            val muteButton = hardwareSurface.createHardwareButton("MUTE_BUTTON_$i")
+            val muteButtonLight = hardwareSurface.createMultiStateHardwareLight("MUTE_BUTTON_LIGHT_$i")
+
+            muteButton.setBackgroundLight(muteButtonLight)
+
+            // Bind the button to toggle mute on the track
+            muteButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, buttonNotes[i]))
+            muteButton.pressedAction().setBinding(
+                host.createAction(Runnable {
+                    track.mute().toggle()
+                }, Supplier { "Toggle Mute for Track $i" })
+            )
+
+            // Set LED feedback based on mute state
+            muteButtonLight.state().setValueSupplier {
+                LightState(
+                    when {
+                        track.mute().get() -> YELLOW
+                        else -> OFF
+                    }
+                )
+            }
+
+            // Update the hardware LED when the state changes
+            muteButtonLight.state().onUpdateHardware {
+                val state = it as LightState
+                hardware.updateLED(buttonNotes[i], state.color)
+            }
+        }
+    }
+
+    private fun addSolos() {
+        // Define button MIDI notes
+        val buttonNotes = arrayOf(BUTTON_2_0, BUTTON_2_1, BUTTON_2_2, BUTTON_2_3)
+
+        // Iterate through the tracks in the track bank
+        for (i in 0 until trackBank.sizeOfBank) {
+            val track = trackBank.getItemAt(i)
+            track.solo().markInterested()
+
+            val soloButton = hardwareSurface.createHardwareButton("SOLO_BUTTON_$i")
+            val soloButtonLight = hardwareSurface.createMultiStateHardwareLight("SOLO_BUTTON_LIGHT_$i")
+
+            soloButton.setBackgroundLight(soloButtonLight)
+
+            soloButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, buttonNotes[i]))
+            soloButton.pressedAction().setBinding(
+                host.createAction(Runnable {
+                    track.solo().toggle()
+                }, Supplier { "Toggle Solo for Track $i" })
+            )
+
+            soloButtonLight.state().setValueSupplier {
+                LightState(
+                    when {
+                        track.solo().get() -> GREEN
+                        else -> OFF
+                    }
+                )
+            }
+
+            // Update the hardware LED when the state changes
+            soloButtonLight.state().onUpdateHardware {
+                val state = it as LightState
+                hardware.updateLED(buttonNotes[i], state.color)
+            }
+        }
+    }
+
+    private fun addArms() {
+        // Define button MIDI notes
+        val buttonNotes = arrayOf(BUTTON_1_0, BUTTON_1_1, BUTTON_1_2, BUTTON_1_3)
+
+        // Iterate through the tracks in the track bank
+        for (i in 0 until trackBank.sizeOfBank) {
+            val track = trackBank.getItemAt(i)
+            track.arm().markInterested()
+
+            val armButton = hardwareSurface.createHardwareButton("ARM_BUTTON_$i")
+            val armButtonLight = hardwareSurface.createMultiStateHardwareLight("ARM_BUTTON_LIGHT_$i")
+
+            armButton.setBackgroundLight(armButtonLight)
+
+            armButton.pressedAction().setActionMatcher(inPort.createNoteOnActionMatcher(0, buttonNotes[i]))
+            armButton.pressedAction().setBinding(
+                host.createAction(Runnable {
+                    track.arm().toggle()
+                }, Supplier { "Toggle Arm for Track $i" })
+            )
+
+            armButtonLight.state().setValueSupplier {
+                LightState(
+                    when {
+                        track.arm().get() -> RED
+                        else -> OFF
+                    }
+                )
+            }
+
+            // Update the hardware LED when the state changes
+            armButtonLight.state().onUpdateHardware {
+                val state = it as LightState
+                hardware.updateLED(buttonNotes[i], state.color)
+            }
+        }
+    }
+
     private fun addPanners() {
         val rel0 = hardwareSurface.createRelativeHardwareKnob("REL_0")
         val rel1 = hardwareSurface.createRelativeHardwareKnob("REL_1")
@@ -373,20 +504,20 @@ class TrackHandler(
 
         when (mode) {
             NavigationMode.SCENE -> {
-                verticalNavigation = trackBank.addBindingWithSensitivity(rel4, 0.5)
-                horizontalNavigation = sceneBank.addBindingWithSensitivity(rel5, 0.5)
+                verticalNavigation = trackBank.addBinding(rel5)
+                horizontalNavigation = sceneBank.addBinding(rel4)
                 hardware.updateLED(BUTTON_LAYER, YELLOW)
             }
 
             NavigationMode.TRACK -> {
-                verticalNavigation = cursorTrack.addBinding(rel4)
-                horizontalNavigation = cursorDevice.addBinding(rel5)
+                verticalNavigation = cursorTrack.addBinding(rel5)
+                horizontalNavigation = cursorDevice.addBinding(rel4)
                 hardware.updateLED(BUTTON_LAYER, GREEN)
             }
 
             NavigationMode.DEVICE -> {
-                verticalNavigation = remoteControlBank.addBinding(rel4)
-                horizontalNavigation = cursorDevice.addBinding(rel5)
+                verticalNavigation = remoteControlBank.addBinding(rel5)
+                horizontalNavigation = cursorDevice.addBinding(rel4)
                 hardware.updateLED(BUTTON_LAYER, RED)
             }
         }
