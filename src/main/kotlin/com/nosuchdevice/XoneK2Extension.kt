@@ -23,7 +23,7 @@ class XoneK2Extension(definition: XoneK2ExtensionDefinition, host: ControllerHos
 
         inPort.setMidiCallback(ShortMidiMessageReceivedCallback { msg: ShortMidiMessage -> onMidi0(msg) })
 
-        val hardware = XoneK2Hardware(inPort, outPort)
+        val hardware = XoneK2Hardware(outPort)
 
         transportHandler = TransportHandler(
             inPort = inPort,

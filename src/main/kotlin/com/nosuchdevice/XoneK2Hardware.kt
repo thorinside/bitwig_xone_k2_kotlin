@@ -1,11 +1,10 @@
 package com.nosuchdevice
 
-import com.bitwig.extension.controller.api.MidiIn
 import com.bitwig.extension.controller.api.MidiOut
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: MidiOut) : CoroutineScope {
+class XoneK2Hardware(private val outputPort: MidiOut) : CoroutineScope {
 
     private val job = Job()
 
@@ -133,25 +132,6 @@ class XoneK2Hardware(private val inputPort: MidiIn, private val outputPort: Midi
             arrayOf(BUTTON_E, BUTTON_F, BUTTON_G, BUTTON_H),
             arrayOf(BUTTON_I, BUTTON_J, BUTTON_K, BUTTON_L),
             arrayOf(BUTTON_M, BUTTON_N, BUTTON_O, BUTTON_P),
-        )
-
-        val LETTER_BUTTON_COORDINATES = mapOf(
-            BUTTON_A to arrayOf(0, 0),
-            BUTTON_B to arrayOf(0, 1),
-            BUTTON_C to arrayOf(0, 2),
-            BUTTON_D to arrayOf(0, 3),
-            BUTTON_E to arrayOf(1, 0),
-            BUTTON_F to arrayOf(1, 1),
-            BUTTON_G to arrayOf(1, 2),
-            BUTTON_H to arrayOf(1, 3),
-            BUTTON_I to arrayOf(2, 0),
-            BUTTON_J to arrayOf(2, 1),
-            BUTTON_K to arrayOf(2, 2),
-            BUTTON_L to arrayOf(2, 3),
-            BUTTON_M to arrayOf(3, 0),
-            BUTTON_N to arrayOf(3, 1),
-            BUTTON_O to arrayOf(3, 2),
-            BUTTON_P to arrayOf(3, 3),
         )
     }
 }
